@@ -229,6 +229,6 @@ export const profile = {
   about:
     'Tiro ideias complexas do papel e as transformo em soluções reais, tangíveis e escaláveis. Atuo de ponta a ponta no ciclo de vida de produtos — da modernização de sistemas críticos (C#/.NET, React, PostgreSQL) à fronteira da IA, construindo pipelines de ETL robustos e soluções com orquestração de LLMs (CrewAI, LangChain), arquitetura RAG e n8n. Gosto de atuar como ponte entre negócios e engenharia, traduzindo requisitos complexos com comunicação clara para entregar valor contínuo.',
   github: 'https://github.com/DevJohnL',
-  linkedin: 'https://linkedin.com/in/seu-usuario',
+  linkedin: 'https://www.linkedin.com/in/joaolucasds/',
   email: 'joao.nascimento@fieldcorp.com.br',
 }
