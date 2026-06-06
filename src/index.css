@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+/* ============ Tokens semânticos (claro/escuro) ============ */
+:root {
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --elevated: #eef2f9;
+  --ink: #0f172a;
+  --ink-soft: #334155;
+  --muted: #64748b;
+  --line: rgba(15, 23, 42, 0.1);
+  --accent: #0891b2;
+  --accent-2: #7c3aed;
+  --accent-soft: rgba(8, 145, 178, 0.08);
+  --glow: rgba(8, 145, 178, 0.18);
+  --particle: rgba(8, 145, 178, 0.35);
+  --particle-line: rgba(71, 85, 105, 0.12);
+}
+
+.dark {
+  --bg: #060a14;
+  --surface: #0c1322;
+  --elevated: #101a2e;
+  --ink: #f1f5f9;
+  --ink-soft: #cbd5e1;
+  --muted: #94a3b8;
+  --line: rgba(148, 163, 184, 0.12);
+  --accent: #22d3ee;
+  --accent-2: #a78bfa;
+  --accent-soft: rgba(34, 211, 238, 0.07);
+  --glow: rgba(34, 211, 238, 0.18);
+  --particle: rgba(34, 211, 238, 0.5);
+  --particle-line: rgba(120, 140, 200, 0.12);
+}
+
+/* expõe os tokens como cores do Tailwind (ex.: bg-base, text-ink) */
+@theme inline {
+  --color-base: var(--bg);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-soft: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--ink-soft);
+  font-family: "Inter", system-ui, sans-serif;
+  overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* esconde o cursor nativo apenas em dispositivos com mouse */
+@media (pointer: fine) {
+  body, a, button, [role="button"] {
+    cursor: none;
+  }
+}
+
+::selection {
+  background: var(--glow);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass {
+  background: color-mix(in srgb, var(--surface) 75%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+}
+
+/* divisor de camadas entre seções */
+.layer-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glow), transparent);
+}
