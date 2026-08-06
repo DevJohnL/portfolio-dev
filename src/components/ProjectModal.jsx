@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 function Section({ title, children }) {
   return (
-    <div>
+    <div className="border-t border-line pt-8 first:border-t-0 first:pt-0">
       <h4 className="mb-3 font-mono text-sm tracking-widest text-accent">
         // {title}
       </h4>
@@ -54,7 +54,7 @@ export default function ProjectModal({ project, onClose }) {
             <h3 className="text-gradient pr-10 text-3xl font-bold">{project.title}</h3>
             <p className="mt-2 text-soft">{project.tagline}</p>
 
-            <div className="mt-8 space-y-8">
+            <div className="mt-8">
               <Section title="problema resolvido">
                 <p className="leading-relaxed text-ink-soft">{project.problem}</p>
               </Section>
@@ -92,6 +92,31 @@ export default function ProjectModal({ project, onClose }) {
                   {project.folderTree}
                 </pre>
               </Section>
+
+              {project.diagramUrl && (
+                <Section title="diagrama de arquitetura">
+                  <div className="overflow-hidden rounded-xl border border-line">
+                    <div className="flex items-center gap-2 border-b border-line bg-elevated px-4 py-2.5">
+                      <span className="h-3 w-3 rounded-full bg-red-400/80" />
+                      <span className="h-3 w-3 rounded-full bg-yellow-400/80" />
+                      <span className="h-3 w-3 rounded-full bg-green-400/80" />
+                      <span className="ml-3 flex-1 truncate rounded-md bg-base px-3 py-1 font-mono text-xs text-soft">
+                        Miro — visualização apenas
+                      </span>
+                    </div>
+                    <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
+                      <iframe
+                        src={project.diagramUrl}
+                        title={`Diagrama de arquitetura de ${project.title}`}
+                        loading="lazy"
+                        allow="fullscreen; clipboard-read; clipboard-write"
+                        allowFullScreen
+                        className="absolute inset-0 h-full w-full bg-white"
+                      />
+                    </div>
+                  </div>
+                </Section>
+              )}
 
               {project.images?.length > 0 && (
                 <Section title="capturas de tela">

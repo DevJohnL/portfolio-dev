@@ -11,39 +11,11 @@
 //  decisions     - lista de decisões técnicas e o porquê
 //  folderTree    - estrutura de pastas (string multilinha, estilo `tree`)
 //  images        - capturas de tela (em /public/projetos/...) — opcional
+//  diagramUrl    - URL de embed (Miro etc.) para a seção "diagrama de arquitetura" — opcional
 //  repoUrl       - link do repositório — opcional (null = privado)
 //  liveUrl       - URL deployada para o iframe embedado — opcional
 
 export const projects = [
-  {
-    slug: 'acutis-summit',
-    title: 'Acutis Summit — Landing Page',
-    tagline:
-      'Landing page do hackathon de inovação católica (ExpoCatólica 2026) — SPA estática com animações de alto impacto e custo zero de infraestrutura.',
-    techs: ['TypeScript', 'Vite', 'Three.js', 'Lenis', 'CSS puro', 'Netlify'],
-    problem:
-      'O evento precisava de uma presença digital forte para atrair pessoas criativas, empreendedoras e apaixonadas pela Igreja. A página concentra o storytelling do evento, informações práticas e CTAs de inscrição — com impacto visual de inovação/tecnologia e custo zero de infraestrutura (site estático em CDN com deploy automático).',
-    architecture:
-      'SPA estática de página única em Vanilla TypeScript (sem framework de UI): o DOM é montado por template literals em #app a partir de um EVENT_CONFIG (única fonte de verdade dos dados do evento). As interações são funções init* independentes: smooth scroll (Lenis), reveals via IntersectionObserver, parallax, spotlight nos cartões, botões magnéticos, tilt 3D do herói, efeito de digitação e gradientes reativos ao ponteiro. Build com tsc (type-check) + Vite, hospedado no Netlify com redirect SPA.',
-    decisions: [
-      'Vanilla TS em vez de framework — página estática de seção única; um framework adicionaria peso e complexidade sem benefício.',
-      'TypeScript strict + noEmit — o tsc roda apenas como verificador de tipos; quem empacota é o Vite.',
-      'Import dinâmico do Three.js — mantém a biblioteca pesada fora do bundle inicial.',
-      'Acessibilidade e performance como guarda: prefers-reduced-motion desliga as animações, efeitos de mouse desativados em touch, listeners passivos, devicePixelRatio limitado e título real no DOM por trás do canvas (SEO/leitores de tela).',
-      'CSS puro com custom properties (--x/--y setadas em JS) — efeitos renderizados no compositor CSS, sem Tailwind/Sass.',
-      'Grain de filme via SVG feTurbulence — textura procedural sem asset de imagem.',
-    ],
-    folderTree: `landing/
-├── index.html              # Shell HTML: SEO/OG, <div id="app">
-├── netlify.toml            # Build, publish dist/, redirect SPA
-├── src/
-│   ├── main.ts             # Toda a aplicação (~740 linhas)
-│   └── styles.css          # Todo o estilo (~1.575 linhas)
-├── public/                 # Logos, vídeos, imagens
-└── dist/                   # Saída de build (Netlify)`,
-    repoUrl: 'https://github.com/DevJohnL/landing-acutissumit',
-    liveUrl: 'https://acutissummit.netlify.app/',
-  },
   {
     slug: 'crm-loja',
     title: 'CRM / ERP de Loja',
@@ -79,41 +51,6 @@ export const projects = [
 └── start-stack.ps1           # Sobe a stack completa`,
     images: ['/projetos/crm/1.png', '/projetos/crm/2.png', '/projetos/crm/3.png'],
     repoUrl: 'https://github.com/DevJohnL/crm-loja',
-    liveUrl: null,
-  },
-  {
-    slug: 'engenharia-de-dados-ia',
-    title: 'Engenharia de Dados para IA',
-    tagline:
-      'Pipeline ELT (MySQL → DuckDB) com arquitetura medalhão e agente de IA que responde perguntas de negócio em português, integrado ao ERP.',
-    techs: ['Python', 'dlt', 'DuckDB', 'dbt', 'Dagster', 'FastAPI', 'CrewAI', 'LangChain', 'Ollama', 'Gemini'],
-    problem:
-      'O banco MySQL do ERP é otimizado para OLTP — rodar análises pesadas direto nele competiria com o PDV em operação e o schema normalizado não é amigável para perguntas de negócio. A solução é um pipeline ELT que copia os dados para um warehouse analítico (DuckDB) modelado em views de negócio, sobre as quais um agente de IA responde perguntas em português ("quais produtos repor?", "quem são meus melhores clientes?") direto no ChatWidget do frontend.',
-    architecture:
-      'Arquitetura medalhão: extração com dlt (MySQL → DuckDB, camada bronze crua), transformação com dbt em views de negócio (camada ouro: vendas diárias, estoque crítico, produtos mais vendidos, resumo de clientes) e orquestração com Dagster (assets extract → dbt run). A camada de IA tem duas variantes: FastAPI + Gemini 2.5 Flash servindo o frontend (POST /perguntar) e um agente CrewAI 100% local com Ollama/llama3 — ambos com tools SQL read-only sobre as views curadas.',
-    decisions: [
-      'DuckDB como warehouse — banco colunar OLAP em arquivo único, sem servidor e custo zero, perfeito para o volume de loja única.',
-      'dlt para extração — schema inference automático e carga idempotente com código Python mínimo.',
-      'dbt com views (não tabelas) — transformações versionadas com lineage; views ficam sempre sincronizadas com o bronze.',
-      'Arquitetura medalhão (bronze → ouro) — separa fidelidade à origem de modelagem de negócio; reprocessar é só rodar dbt run.',
-      'Agente IA com tools SQL read-only — o LLM apenas consulta views curadas: sem risco de mutação e respostas ancoradas em dados reais.',
-      'Dois LLMs: Gemini (nuvem) para qualidade/latência no chat e Ollama/llama3 para opção offline e sem custo.',
-    ],
-    folderTree: `data-engeneering/
-├── extract.py                  # EL: MySQL → DuckDB (dlt), bronze
-├── orquestrador.py             # Dagster: extract → dbt run
-├── api_ia.py                   # FastAPI + Gemini (POST /perguntar)
-├── agente_erp.py               # Agente CrewAI + Ollama (local)
-├── erp_analitico.duckdb        # Warehouse em arquivo
-└── transformacoes_erp/         # Projeto dbt
-    └── models/
-        ├── sources.yml         # Tabelas bronze como sources
-        ├── view_vendas_diarias.sql
-        ├── view_estoque_critico.sql
-        ├── view_produtos_mais_vendidos.sql
-        └── view_resumo_clientes.sql`,
-    images: ['/projetos/dados-ia/1.png', '/projetos/dados-ia/2.png'],
-    repoUrl: 'https://github.com/DevJohnL/engenharia-de-dados-para-ia',
     liveUrl: null,
   },
   {
@@ -193,31 +130,76 @@ export const projects = [
     │   └── shared/              # guards, decorators, tenants
     └── prisma/                  # schema + migrations`,
     images: ['/projetos/helpdesk/1.png', '/projetos/helpdesk/2.png'],
+    diagramUrl:
+      'https://miro.com/app/live-embed/uXjVHJ19Xp4=/?embedMode=view_only_without_ui&moveToViewport=-117,-858,3230,1663&embedId=821629882624',
     repoUrl: null, // projeto particular — repositório privado
+    liveUrl: null,
+  },
+  {
+    slug: 'mapa-de-transporte',
+    title: 'Mapa de Transporte — Assistente de IA para Produção de TV',
+    tagline:
+      'Assistente de IA que extrai dados operacionais de qualquer formato (texto, PDF, planilha ou foto) e gera o Mapa de Transporte já formatado, via API ou direto no WhatsApp.',
+    techs: [
+      'Python', 'LangChain', 'LangGraph', 'FastAPI', 'Uvicorn', 'Pydantic',
+      'Jinja2', 'pypdfium2', 'pandas', 'openpyxl', 'httpx', 'LangSmith', 'WAHA', 'pytest',
+    ],
+    problem:
+      'Antes de cada gravação, a produção recebe informações de transporte (passageiros, motoristas, veículos, horários, OTs) de fontes heterogêneas — PDFs exportados de sistemas de transporte, planilhas, textos copiados ou até prints — e precisa consolidar tudo manualmente em um mapa padronizado, cuidando de detalhes como ocultar dados sensíveis (telefone de passageiro, empresa do motorista), agrupar por programa/estado e revisar inconsistências. Esse processo é sujeito a erro humano e não escala bem. O assistente automatiza essa cadeia inteira mantendo o controle de qualidade que a tarefa exige: nunca inventa dados — qualquer campo extraído com baixa confiança é sinalizado como REVISAR em vez de ser preenchido especulativamente pelo LLM.',
+    architecture:
+      'Construído como um grafo de estados determinístico com LangGraph, onde cada etapa do fluxo é uma tool isolada e testável — a única etapa que usa um LLM é a extração; todo o resto é código determinístico: ingestão → extração (LLM) → enriquecimento → validação → agrupamento → renderização → revisão final. Ingestão detecta o tipo de entrada (texto, PDF, planilha ou imagem) e normaliza tudo em páginas de texto/imagem. Extração é a única chamada ao LLM (com visão, via LangChain + OpenAI), retornando dados estruturados por página com schema Pydantic — cada campo sensível carrega uma flag de confiança (ok/revisar), mas a decisão de exibir "REVISAR" é tomada depois, na renderização, nunca pelo próprio LLM. Enriquecimento e validação são tools puras e determinísticas (inferência de estado pelo DDD do motorista, emoji do tipo de veículo, ocultação de dados sensíveis, detecção de duplicidades/conflitos). Agrupamento organiza registros por programa → estado preservando a ordem de aparição, e a renderização usa templates Jinja2 determinísticos. Um checkpoint por thread_id no LangGraph permite orquestração conversacional — pedir "versão completa", "variações corporativas" ou "telefone do passageiro" em turnos seguintes sem reprocessar a extração original. O sistema é acessível via API REST (FastAPI) e via WhatsApp, através de um webhook integrado ao WAHA (WhatsApp HTTP API), com boas-vindas automática, extração de mídia enviada no chat e comandos de acompanhamento em linguagem natural. LangSmith faz o tracing das execuções do grafo.',
+    decisions: [
+      'Separação rígida entre LLM (só extração) e lógica de negócio (100% determinística e testável sem custo de API).',
+      '"Nunca inventar dados" como princípio central — incerteza é sempre visível (REVISAR), nunca escondida.',
+      'Endpoint de WhatsApp desacoplado de configuração (URL e chave vêm da query string do próprio WAHA) — escala para múltiplas instâncias/clientes sem alterar código.',
+      'Conversação com estado via checkpoint do LangGraph (thread_id), permitindo follow-ups sem reextrair dados.',
+    ],
+    folderTree: `mapa-de-transporte/
+├── app/
+│   ├── graph/                 # Grafo LangGraph (estados determinísticos)
+│   │   ├── ingestao.py         # Detecta texto/PDF/planilha/imagem
+│   │   ├── extracao.py         # Única etapa com LLM (visão + Pydantic)
+│   │   ├── enriquecimento.py   # Tools puras: estado, emoji, ocultação
+│   │   ├── validacao.py        # Duplicidades e conflitos
+│   │   ├── agrupamento.py      # Por programa → estado
+│   │   └── renderizacao.py     # Templates Jinja2 + REVISAR
+│   ├── api/                    # FastAPI: mensagem/arquivo, versões
+│   └── whatsapp/                # Webhook WAHA
+├── templates/                  # Templates Jinja2 do mapa
+└── tests/                       # pytest`,
+    repoUrl: null, // TODO: repoUrl a ser adicionado pelo usuário
     liveUrl: null,
   },
 ]
 
-// Tecnologias exibidas como tags no hero
-export const heroTechs = [
-  'TypeScript',
-  'Node.js',
-  'NestJS',
-  'C#/.NET',
-  'Python',
-  'Go',
-  'React',
-  'Next.js',
-  'Angular',
-  'Flutter',
-  'PostgreSQL',
-  'Redis',
-  'Docker',
-  'Linux',
-  'n8n',
-  'LangChain',
-  'CrewAI',
-  'RAG',
+// Principais stacks e competências, agrupadas por área (exibidas na seção "Sobre")
+export const stackCategories = [
+  {
+    category: 'Engenharia de Dados e Infraestrutura',
+    items: [
+      'Airbyte', 'dbt', 'Apache Airflow', 'Celery', 'Databricks', 'PySpark',
+      'AWS', 'Azure', 'GCP', 'Terraform', 'Docker', 'Git', 'Linux',
+    ],
+  },
+  {
+    category: 'Bancos de Dados e Armazenamento',
+    items: ['PostgreSQL', 'MySQL', 'MongoDB', 'ClickHouse', 'Qdrant', 'Redis'],
+  },
+  {
+    category: 'Inteligência Artificial e GenAI',
+    items: [
+      'LLMs em produção', 'RAG', 'Agentes de IA com estado',
+      'LangChain', 'LangGraph', 'LlamaIndex', 'CrewAI', 'n8n',
+    ],
+  },
+  {
+    category: 'Linguagens e Backend',
+    items: ['Python', 'SQL', 'FastAPI', 'REST APIs', 'TypeScript', 'Node.js', 'NestJS', 'C#/.NET', 'Go'],
+  },
+  {
+    category: 'Frontend, Mobile & Outros',
+    items: ['React', 'Next.js', 'Angular', 'Flutter'],
+  },
 ]
 
 // Informações pessoais
@@ -226,8 +208,11 @@ export const profile = {
   role: 'Desenvolvedor Fullstack | Engenharia de Dados, Automação & IA Aplicada',
   aboutLead:
     'Mais do que escrever código, sou movido pelo desafio de criar o novo.',
-  about:
-    'Tiro ideias complexas do papel e as transformo em soluções reais, tangíveis e escaláveis. Atuo de ponta a ponta no ciclo de vida de produtos — da modernização de sistemas críticos (C#/.NET, React, PostgreSQL) à fronteira da IA, construindo pipelines de ETL robustos e soluções com orquestração de LLMs (CrewAI, LangChain), arquitetura RAG e n8n. Gosto de atuar como ponte entre negócios e engenharia, traduzindo requisitos complexos com comunicação clara para entregar valor contínuo.',
+  about: [
+    'Sou um Engenheiro de Dados e Inteligência Artificial focado em traduzir necessidades reais de negócios em soluções tecnológicas robustas. Minha trajetória começou na Engenharia Elétrica, atuando desde o nível operacional até a coordenação de projetos, o que desenvolveu minha visão sistêmica e capacidade analítica. Posteriormente, no suporte técnico B2B de grandes empresas, aprofundei meu entendimento sobre as dores corporativas e o funcionamento de negócios em escala.',
+    'Hoje, dedico-me a projetar e orquestrar arquiteturas de dados escaláveis — dominando fluxos de ETL/ELT e modelagem avançada — para viabilizar soluções de IA que realmente trazem resultados. Tenho experiência prática com soluções em produção, desenvolvendo sistemas RAG (Retrieval-Augmented Generation) e orquestrando Agentes de IA complexos.',
+    'Atualmente, alio minha sólida base em engenharia com o aprimoramento acadêmico por meio do curso de Ciência de Dados na Universidade Federal do Ceará (UFC).',
+  ],
   github: 'https://github.com/DevJohnL',
   linkedin: 'https://www.linkedin.com/in/joaolucasds/',
   email: 'joao.nascimento@fieldcorp.com.br',

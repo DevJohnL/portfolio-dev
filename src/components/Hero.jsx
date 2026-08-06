@@ -1,7 +1,6 @@
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
-import TechTag from './TechTag.jsx'
-import { profile, heroTechs } from '../data/projects.js'
+import { profile } from '../data/projects.js'
 
 // Hero com spotlight radial que segue o mouse.
 export default function Hero() {
@@ -50,30 +49,14 @@ export default function Hero() {
         {profile.role}
       </motion.h2>
 
-      <motion.div
+      <motion.p
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.3 }}
-        className="glass mt-10 max-w-4xl rounded-2xl border-l-2 border-l-accent/60 px-8 py-8 text-left shadow-[0_0_50px_var(--accent-soft)]"
+        className="text-gradient mt-8 max-w-2xl text-xl font-semibold leading-snug md:text-2xl"
       >
-        <p className="text-gradient text-2xl font-semibold leading-snug md:text-3xl">
-          “{profile.aboutLead}”
-        </p>
-        <p className="mt-5 text-base leading-relaxed text-ink-soft md:text-lg">
-          {profile.about}
-        </p>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.45 }}
-        className="mt-10 flex max-w-3xl flex-wrap justify-center gap-3"
-      >
-        {heroTechs.map((tech) => (
-          <TechTag key={tech}>{tech}</TechTag>
-        ))}
-      </motion.div>
+        “{profile.aboutLead}”
+      </motion.p>
 
       <motion.a
         href="#projetos"
